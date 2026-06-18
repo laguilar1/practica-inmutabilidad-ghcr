@@ -1,0 +1,36 @@
+name: CI/CD Pipeline Inmutable (GitHub Packages)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    # IMPORTANTE: Le damos permisos al pipeline para escribir paquetes en el repositorio
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    # 1. Autenticarse en GitHub Container Registry (GHCR)
+    - name: Autenticación en GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # 2. Construir y subir la imagen directamente a tu perfil de GitHub
+    - name: Construir y Subir Imagen Docker
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        # El formato ahora es: ghcr.io/usuario/nombre-repositorio:etiqueta
+        tags: |
+          ghcr.io/${{ github.repository }}:${{ github.sha }}
+          ghcr.io/${{ github.repository }}:latest
