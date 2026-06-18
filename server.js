@@ -1,7 +1,8 @@
 const express = require('express');
+const { version } = require('./package.json');
 const app = express();
 const PORT = 3000;
-const version = 1.0;
+
 
 app.get('/', (req, res) => {
   res.send(`<h1>🚀 Versión ${version} de la aplicación - Estable y Funcionando</h1>`);
