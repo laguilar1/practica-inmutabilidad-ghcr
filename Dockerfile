@@ -1,5 +1,8 @@
 FROM node:18-alpine
 
+# Añade esta línea (reemplaza con tu usuario y repo exacto)
+LABEL org.opencontainers.image.source=https://github.com/laguilar1/practica-inmutabilidad-ghcr
+
 WORKDIR /app
 
 # Copiamos archivos de dependencias e instalamos
