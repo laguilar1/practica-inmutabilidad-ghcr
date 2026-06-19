@@ -33,6 +33,16 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # 3.5 Extraer metadatos para Docker (etiquetas y OCI labels)
+      - name: Extraer metadatos de Docker
+        if: ${{ steps.release.outputs.release_created }}
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          labels: |
+            org.opencontainers.image.description=Práctica de inmutabilidad y despliegues automáticos usando GHCR y Release Please.
+
       # 4. Construir y subir la imagen directamente a tu perfil de GitHub
       - name: Construir y Subir Imagen Docker
         if: ${{ steps.release.outputs.release_created }}
@@ -44,3 +54,4 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ steps.release.outputs.tag_name }}
             ghcr.io/${{ github.repository }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
