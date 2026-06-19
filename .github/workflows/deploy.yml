@@ -4,41 +4,43 @@ on:
   push:
     branches: [ "main" ]
 
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
 jobs:
-  build-and-push:
+  release-or-deploy:
     runs-on: ubuntu-latest
-    # IMPORTANTE: Le damos permisos al pipeline para escribir paquetes en el repositorio
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-    - name: Checkout del código
-      uses: actions/checkout@v4
+      # 1. Ejecutar Release Please para automatizar versiones y PRs
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
 
-    # Extraer la propiedad 'version' de package.json
-    - name: Obtener versión desde package.json
-      id: get_version
-      run: |
-        VERSION=$(node -p "require('./package.json').version")
-        echo "version=v$VERSION" >> $GITHUB_OUTPUT
+      # 2. Descargar el código (solo si se creó una nueva release)
+      - name: Checkout del código
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
 
-    # 1. Autenticarse en GitHub Container Registry (GHCR)
-    - name: Autenticación en GHCR
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      # 3. Autenticación en GHCR (solo si se creó una nueva release)
+      - name: Autenticación en GHCR
+        if: ${{ steps.release.outputs.release_created }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    # 2. Construir y subir la imagen directamente a tu perfil de GitHub
-    - name: Construir y Subir Imagen Docker
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        # El formato ahora es: ghcr.io/usuario/nombre-repositorio:etiqueta
-        tags: |
-          ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.version }}
-          ghcr.io/${{ github.repository }}:${{ github.sha }}
-          ghcr.io/${{ github.repository }}:latest
+      # 4. Construir y subir la imagen directamente a tu perfil de GitHub
+      - name: Construir y Subir Imagen Docker
+        if: ${{ steps.release.outputs.release_created }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ steps.release.outputs.tag_name }}
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:latest
