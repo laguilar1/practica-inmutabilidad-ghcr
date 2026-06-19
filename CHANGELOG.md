@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/laguilar1/practica-inmutabilidad-ghcr/compare/v1.0.0...v1.1.0) (2026-06-19)
+
+
+### Features
+
+* corrigiendo texto de bienvenida automatico ([6ec3b25](https://github.com/laguilar1/practica-inmutabilidad-ghcr/commit/6ec3b2587fd75520dc66fa1e459b71110744fe2a))
+
 ## 1.0.0 (2026-06-19)
 
 
