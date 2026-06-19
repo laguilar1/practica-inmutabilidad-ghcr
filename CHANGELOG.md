@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/laguilar1/practica-inmutabilidad-ghcr/compare/v1.1.0...v1.1.1) (2026-06-19)
+
+
+### Bug Fixes
+
+* agregando descripción al GHCR ([9dd5e59](https://github.com/laguilar1/practica-inmutabilidad-ghcr/commit/9dd5e592695333f852d2d47ab2ab86b7bff51d5e))
+
 ## [1.1.0](https://github.com/laguilar1/practica-inmutabilidad-ghcr/compare/v1.0.0...v1.1.0) (2026-06-19)
 
 
